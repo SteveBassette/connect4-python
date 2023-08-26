@@ -37,6 +37,9 @@ class Game():
     def columnFull(self, column):
         row = self._getTopRowWithToken(column)
         return row >= self.height - 1
+    
+    def reset(self):
+        self.grid = dict()
 
 class GAME_STATES():
     PLAYING = 'playing'
@@ -73,21 +76,32 @@ class Screen():
 
 class GameRunner():
 
-    def __init__(self, command_sequence):
-        self.command_sequence = command_sequence
-
-    def run(self, game):
-        methods = {
-            '>': game.shiftRight,
-            '<': game.shiftLeft,
-            'v': game.drop,
+    def __init__(self, game):
+        self.game = game
+        self.methods = {
+            ord('q'): lambda: "quit",
+            ord('>'): game.shiftRight,
+            ord('<'): game.shiftLeft,
+            ord('v'): game.drop,
+            ord('r'): game.reset,
             curses.KEY_RIGHT: game.shiftRight,
             curses.KEY_LEFT: game.shiftLeft,
             curses.KEY_DOWN: game.drop,
         }
 
-        for command in self.command_sequence:
-            methods[command]()
+    def runSequential(self, screen):
+        self.game.paintGameBoard()
+        while True:
+            command = screen.getch()
+            if "quit" == self.methods[command]():
+                return
+            self.game.paintGameBoard()
+
+    def run(self, command_sequence=None):
+        for command in command_sequence:
+            self.methods[command if not isinstance(command, str) else ord(command)]()
+
+
 
 class TestedCliGame(Game):
 
@@ -101,6 +115,7 @@ class TestedCliGame(Game):
         self.turn = 0
 
     def paintGameBoard(self):
+        self.stdscr.clear()
         self.stdscr.addstr(0, self.selected_column, 'v')
         self.stdscr.addstr(8, 0, '~'*self.width)
         self.stdscr.addstr(1, 0, '_'*self.width)
@@ -110,8 +125,6 @@ class TestedCliGame(Game):
 
         if self.over():
             self.paintGameOver()
-
-
 
     def paintGameOver(self):
         self.stdscr.addstr(10, 0, 'GAME OVER ...')
@@ -144,6 +157,10 @@ class TestedCliGame(Game):
     def shiftLeft(self):
         self.selected_column -= 1
         self.selected_column = max(self.selected_column, 0)
+
+    def reset(self):
+        super().reset()
+        self.selected_column = 0
 
 
 class CliGame(Game):
@@ -233,15 +250,25 @@ class CliGame(Game):
 
             if c == ord('q'):
                 break
-            
+
         curses.nocbreak()
         self.stdscr.keypad(False)
         curses.echo()
         curses.endwin()
 
 def main_ui(stdscr):
-    game = CliGame(stdscr)
-    game.main()
+    curses.noecho()
+    curses.cbreak()
+    stdscr.keypad(True)
+
+    game = TestedCliGame(stdscr)
+    runner = GameRunner(game)
+    runner.runSequential(stdscr)
+    
+    curses.nocbreak()
+    stdscr.keypad(False)
+    curses.echo()
+    curses.endwin()
 
 if __name__ == "__main__":
     curses.wrapper(main_ui)
