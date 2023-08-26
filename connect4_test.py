@@ -2,6 +2,7 @@
 import unittest
 import connect4
 import re
+import curses
 
 class TestConnect4(unittest.TestCase):
 
@@ -200,12 +201,14 @@ class TestScreenDummy(unittest.TestCase):
         except:
             self.fail("Couldn't refresh the page")
 
-class TestConnect4CLI(unittest.TestCase):
+class Connect4CLITestCase(unittest.TestCase):
 
     def assertScreenEquals(self, screen, expected):
         
         self.assertEqual(str(screen), re.sub("(^ *)|(\n^ *$)", "", expected[1:], flags=re.MULTILINE))
         # self.assertEqual(str(screen), expected[1:].replace(" ", ""))
+
+class TestConnect4CLI(Connect4CLITestCase):
 
     def test_can_pass_cligame_a_screen(self):
         test_screen = connect4.Screen()
@@ -459,6 +462,148 @@ class TestConnect4CLI(unittest.TestCase):
                                 ####################
                                 ####################
                                 """)
+
+class TestConnect4CLIGameRunner(Connect4CLITestCase):
+
+    def test_cligame_user_input_can_shift_right(self):
+        test_screen = connect4.Screen(width=20, height=14, background='#')
+        game = connect4.TestedCliGame(test_screen)
+        game_runnner = connect4.GameRunner(">")
+        game_runnner.run(game)
+        game.paintGameBoard()
+        self.assertScreenEquals(test_screen, """
+                                #v##################
+                                ______##############
+                                ####################
+                                ####################
+                                ####################
+                                ####################
+                                ####################
+                                ####################
+                                ~~~~~~##############
+                                ####################
+                                ####################
+                                ####################
+                                ####################
+                                ####################
+                                """)
+
+    def test_cligame_user_input_can_shift_right_with_arrow_key(self):
+        test_screen = connect4.Screen(width=20, height=14, background='#')
+        game = connect4.TestedCliGame(test_screen)
+        game_runnner = connect4.GameRunner([curses.KEY_RIGHT])
+        game_runnner.run(game)
+        game.paintGameBoard()
+        self.assertScreenEquals(test_screen, """
+                                #v##################
+                                ______##############
+                                ####################
+                                ####################
+                                ####################
+                                ####################
+                                ####################
+                                ####################
+                                ~~~~~~##############
+                                ####################
+                                ####################
+                                ####################
+                                ####################
+                                ####################
+                                """)
+
+    def test_cligame_user_input_can_shift_left(self):
+        test_screen = connect4.Screen(width=20, height=14, background='#')
+        game = connect4.TestedCliGame(test_screen)
+        game_runnner = connect4.GameRunner("><")
+        game_runnner.run(game)
+        game.paintGameBoard()
+        self.assertScreenEquals(test_screen, """
+                                v###################
+                                ______##############
+                                ####################
+                                ####################
+                                ####################
+                                ####################
+                                ####################
+                                ####################
+                                ~~~~~~##############
+                                ####################
+                                ####################
+                                ####################
+                                ####################
+                                ####################
+                                """)
+
+    def test_cligame_user_input_can_shift_left_with_arrow_key(self):
+        test_screen = connect4.Screen(width=20, height=14, background='#')
+        game = connect4.TestedCliGame(test_screen)
+        game_runnner = connect4.GameRunner([curses.KEY_LEFT])
+        game_runnner.run(game)
+        game.paintGameBoard()
+        self.assertScreenEquals(test_screen, """
+                                v###################
+                                ______##############
+                                ####################
+                                ####################
+                                ####################
+                                ####################
+                                ####################
+                                ####################
+                                ~~~~~~##############
+                                ####################
+                                ####################
+                                ####################
+                                ####################
+                                ####################
+                                """)
+
+    def test_cligame_user_input_can_drop_token(self):
+        test_screen = connect4.Screen(width=20, height=14, background='#')
+        game = connect4.TestedCliGame(test_screen)
+        game_runnner = connect4.GameRunner("v")
+        game_runnner.run(game)
+        game.paintGameBoard()
+        self.assertScreenEquals(test_screen, """
+                                v###################
+                                ______##############
+                                ####################
+                                ####################
+                                ####################
+                                ####################
+                                ####################
+                                r###################
+                                ~~~~~~##############
+                                ####################
+                                ####################
+                                ####################
+                                ####################
+                                ####################
+                                """)
+
+    def test_cligame_user_input_can_drop_token_with_arrow_keys(self):
+        test_screen = connect4.Screen(width=20, height=14, background='#')
+        game = connect4.TestedCliGame(test_screen)
+        game_runnner = connect4.GameRunner([curses.KEY_DOWN])
+        game_runnner.run(game)
+        game.paintGameBoard()
+        self.assertScreenEquals(test_screen, """
+                                v###################
+                                ______##############
+                                ####################
+                                ####################
+                                ####################
+                                ####################
+                                ####################
+                                r###################
+                                ~~~~~~##############
+                                ####################
+                                ####################
+                                ####################
+                                ####################
+                                ####################
+                                """)
+
+
 
 if __name__ == "__main__":
     unittest.main()

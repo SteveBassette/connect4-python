@@ -71,6 +71,24 @@ class Screen():
     def __str__(self):
         return '\n'.join([''.join(l) for l in self.content])
 
+class GameRunner():
+
+    def __init__(self, command_sequence):
+        self.command_sequence = command_sequence
+
+    def run(self, game):
+        methods = {
+            '>': game.shiftRight,
+            '<': game.shiftLeft,
+            'v': game.drop,
+            curses.KEY_RIGHT: game.shiftRight,
+            curses.KEY_LEFT: game.shiftLeft,
+            curses.KEY_DOWN: game.drop,
+        }
+
+        for command in self.command_sequence:
+            methods[command]()
+
 class TestedCliGame(Game):
 
     def __init__(self, stdscr):
