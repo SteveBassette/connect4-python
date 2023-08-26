@@ -184,5 +184,133 @@ class TestScreenDummy(unittest.TestCase):
         except:
             self.fail("Couldn't refresh the page")
 
+class TestConnect4CLI(unittest.TestCase):
+
+    def assertScreenEquals(self, screen, expected):
+        self.assertEqual(str(screen), expected[1:].replace(" ", ""))
+
+    def test_can_pass_cligame_a_screen(self):
+        test_screen = connect4.Screen()
+        game = connect4.TestedCliGame(test_screen)
+
+    def test_cligame_empty_board_pixelcomparison(self):
+        test_screen = connect4.Screen(width=6, height=9, background='#')
+        game = connect4.TestedCliGame(test_screen)
+        game.paintGameBoard()
+        self.assertScreenEquals(test_screen, """
+                         v#####
+                         ______
+                         ######
+                         ######
+                         ######
+                         ######
+                         ######
+                         ######
+                         ~~~~~~""")
+
+    def test_cligame_dropped_token_pixelcomparison(self):
+        test_screen = connect4.Screen(width=6, height=9, background='#')
+        game = connect4.TestedCliGame(test_screen)
+        game.drop()
+        game.paintGameBoard()
+        self.assertScreenEquals(test_screen, """
+                         v#####
+                         ______
+                         ######
+                         ######
+                         ######
+                         ######
+                         ######
+                         r#####
+                         ~~~~~~""")
+
+    def test_cligame_2_dropped_token_pixelcomparison(self):
+        test_screen = connect4.Screen(width=6, height=9, background='#')
+        game = connect4.TestedCliGame(test_screen)
+        game.drop()
+        game.drop()
+        game.paintGameBoard()
+        self.assertScreenEquals(test_screen, """
+                         v#####
+                         ______
+                         ######
+                         ######
+                         ######
+                         ######
+                         b#####
+                         r#####
+                         ~~~~~~""")
+
+    def test_cligame_can_shift_right(self):
+        test_screen = connect4.Screen(width=6, height=9, background='#')
+        game = connect4.TestedCliGame(test_screen)
+        game.shiftRight()
+        game.paintGameBoard()
+        self.assertScreenEquals(test_screen, """
+                         #v####
+                         ______
+                         ######
+                         ######
+                         ######
+                         ######
+                         ######
+                         ######
+                         ~~~~~~""")
+
+    def test_cligame_cant_shift_right_past_screen(self):
+        test_screen = connect4.Screen(width=6, height=9, background='#')
+        game = connect4.TestedCliGame(test_screen)
+        game.shiftRight()
+        game.shiftRight()
+        game.shiftRight()
+        game.shiftRight()
+        game.shiftRight()
+        game.shiftRight()
+        game.paintGameBoard()
+        self.assertScreenEquals(test_screen, """
+                         #####v
+                         ______
+                         ######
+                         ######
+                         ######
+                         ######
+                         ######
+                         ######
+                         ~~~~~~""")
+
+    def test_cligame_can_shift_left(self):
+        test_screen = connect4.Screen(width=6, height=9, background='#')
+        game = connect4.TestedCliGame(test_screen)
+        game.shiftRight()
+        game.shiftLeft()
+        game.paintGameBoard()
+        self.assertScreenEquals(test_screen, """
+                         v#####
+                         ______
+                         ######
+                         ######
+                         ######
+                         ######
+                         ######
+                         ######
+                         ~~~~~~""")
+        
+
+    def test_cligame_cant_shift_left_past_screen(self):
+        test_screen = connect4.Screen(width=6, height=9, background='#')
+        game = connect4.TestedCliGame(test_screen)
+        game.shiftLeft()
+        game.paintGameBoard()
+        self.assertScreenEquals(test_screen, """
+                         v#####
+                         ______
+                         ######
+                         ######
+                         ######
+                         ######
+                         ######
+                         ######
+                         ~~~~~~""")
+
 if __name__ == "__main__":
     unittest.main()

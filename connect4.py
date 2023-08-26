@@ -65,6 +65,38 @@ class Screen():
     def __str__(self):
         return '\n'.join([''.join(l) for l in self.content])
 
+class TestedCliGame(Game):
+
+    def __init__(self, stdscr):
+        super().__init__(6,6)
+        self.stdscr = stdscr
+        self.selected_column = 0
+        red = self.token('r')
+        black = self.token('b')
+        self.players_list = [red, black]
+        self.turn = 0
+
+    def paintGameBoard(self):
+        self.stdscr.addstr(0, self.selected_column, 'v')
+        self.stdscr.addstr(8, 0, '~'*self.width)
+        self.stdscr.addstr(1, 0, '_'*self.width)
+
+        for k in self.grid:
+            self.stdscr.addstr(self.height-k[0]+1, k[1], self.grid[k])
+
+    def drop(self):
+        super().drop(self.players_list[self.turn%len(self.players_list)], self.selected_column)
+        self.turn += 1
+
+    def shiftRight(self):
+        self.selected_column += 1
+        self.selected_column = min(self.selected_column, self.width-1)
+
+    def shiftLeft(self):
+        self.selected_column -= 1
+        self.selected_column = max(self.selected_column, 0)
+
+
 class CliGame(Game):
 
     def __init__(self, stdscr):
