@@ -32,6 +32,13 @@ class Game():
                 return True
         return False
 
+    def _getTopRowWithToken(self, column):
+        return max([k[0] if k[1] == column else -1 for k in self.grid] + [-1])
+
+    def columnFull(self, column):
+        row = self._getTopRowWithToken(column)
+        return row >= self.height - 1
+
 class GAME_STATES():
     PLAYING = 'playing'
     gaming = 'playing'
@@ -109,8 +116,9 @@ class TestedCliGame(Game):
         # self.stdscr.addstr(22, 0, '|________|      \__/      |_____|  |_| \_\   ')
 
     def drop(self):
-        super().drop(self.players_list[self.turn%len(self.players_list)], self.selected_column)
-        self.turn += 1
+        if not self.columnFull(self.selected_column):
+            super().drop(self.players_list[self.turn%len(self.players_list)], self.selected_column)
+            self.turn += 1
 
     def shiftRight(self):
         self.selected_column += 1

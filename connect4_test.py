@@ -79,6 +79,21 @@ class TestConnect4(unittest.TestCase):
         game.drop(token, 3)
         self.assertTrue(game.over())
 
+    def test_column_not_full_when_empty(self):
+        game = connect4.Game(6, 6)
+        self.assertFalse(game.columnFull(0))
+
+    def test_column_full_when_adding_token_to_all_cells(self):
+        game = connect4.Game(6, 6)
+        token = game.token("red")
+        game.drop(token, 0)
+        game.drop(token, 0)
+        game.drop(token, 0)
+        game.drop(token, 0)
+        game.drop(token, 0)
+        game.drop(token, 0)
+        self.assertTrue(game.columnFull(0))
+
     def test_game_over_after_4_drops_with_different_colors(self):
         game = connect4.Game(6, 6)
         token = game.token("red")
@@ -347,6 +362,66 @@ class TestConnect4CLI(unittest.TestCase):
                                 Press:##############
                                 ####r) restart######
                                 ####q) quit#########
+                                """)
+
+    def test_cligame_cannot_overfill_board(self):
+        test_screen = connect4.Screen(width=20, height=14, background='#')
+        game = connect4.TestedCliGame(test_screen)
+        game.drop()
+        game.drop()
+        game.drop()
+        game.drop()
+        game.drop()
+        game.drop()
+        game.drop()
+
+        game.paintGameBoard()
+        self.assertScreenEquals(test_screen, """
+                                v###################
+                                ______##############
+                                b###################
+                                r###################
+                                b###################
+                                r###################
+                                b###################
+                                r###################
+                                ~~~~~~##############
+                                ####################
+                                ####################
+                                ####################
+                                ####################
+                                ####################
+                                """)
+
+    def test_cligame_trying_to_overfill_doesnt_skip_turn(self):
+        test_screen = connect4.Screen(width=20, height=14, background='#')
+        game = connect4.TestedCliGame(test_screen)
+        game.drop()
+        game.drop()
+        game.drop()
+        game.drop()
+        game.drop()
+        game.drop()
+        game.drop()
+        game.shiftRight()
+        game.drop()
+
+        game.paintGameBoard()
+        self.assertScreenEquals(test_screen, """
+                                #v##################
+                                ______##############
+                                b###################
+                                r###################
+                                b###################
+                                r###################
+                                b###################
+                                rr##################
+                                ~~~~~~##############
+                                ####################
+                                ####################
+                                ####################
+                                ####################
+                                ####################
                                 """)
 
 if __name__ == "__main__":
