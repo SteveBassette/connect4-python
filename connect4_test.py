@@ -131,5 +131,58 @@ class TestConnect4(unittest.TestCase):
         self.assertTrue(game.over())
 
 
+class TestScreenDummy(unittest.TestCase):
+
+    def test_can_create_a_screen(self):
+        test_screen = connect4.Screen()
+
+    def test_can_specify_screen_size(self):
+        test_screen = connect4.Screen(width=10, height=10)
+
+    def test_cannot_add_string_to_screen_outside_width(self):
+        test_screen = connect4.Screen(width=1, height=1)
+        self.assertRaises(Exception, lambda: test_screen.addstr(0, 1, '.'))
+
+    def test_cannot_add_string_to_screen_outside_height(self):
+        test_screen = connect4.Screen(width=1, height=1)
+        self.assertRaises(Exception, lambda: test_screen.addstr(1, 0, '.'))
+
+    def test_can_specify_empty_screen_character(self):
+        test_screen = connect4.Screen(width=1, height=1, background='#')
+        self.assertEqual(str(test_screen), '#')
+
+    def test_can_get_string_added_to_screen(self):
+        test_screen = connect4.Screen()
+        test_screen.addstr(0, 0, '.')
+        self.assertEqual(str(test_screen), '.')
+
+    def test_can_add_string_to_second_character_on_screen(self):
+        test_screen = connect4.Screen(2,2,background='#')
+        test_screen.addstr(0, 1, '.')
+        self.assertEqual(str(test_screen), '#.\n##')
+
+    def test_can_add_string_to_second_row_on_screen(self):
+        test_screen = connect4.Screen(2,2,background='#')
+        test_screen.addstr(1, 0, '.')
+        self.assertEqual(str(test_screen), '##\n.#')
+
+    def test_can_clear_the_screen(self):
+        test_screen = connect4.Screen(2,2,background='#')
+        test_screen.addstr(1, 0, '.')
+        test_screen.clear()
+        self.assertEqual(str(test_screen), '##\n##')
+
+    def test_can_write_multiple_chars(self):
+        test_screen = connect4.Screen(5,2,background='#')
+        test_screen.addstr(0, 0, '123')
+        self.assertEqual(str(test_screen), '123##\n#####')
+
+    def test_can_refresh(self):
+        test_screen = connect4.Screen(5,2,background='#')
+        try:
+            test_screen.refresh
+        except:
+            self.fail("Couldn't refresh the page")
+
 if __name__ == "__main__":
     unittest.main()

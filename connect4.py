@@ -37,6 +37,34 @@ class GAME_STATES():
     gaming = 'playing'
     gameover = 'gameover'
 
+class Screen():
+
+    def __init__(self, width=1, height=1, background=' '):
+        self.width = width
+        self.height = height
+        self.background = background
+        self.content = [[self.background for c in range(self.width)] for r in range(self.height)]
+
+    def addstr(self, y, x, content):
+
+        if x+1 > self.width:
+            raise Exception()
+
+        if y+1 > self.height:
+            raise Exception()
+
+        for index, s in enumerate(content):
+            self.content[y][x+index] = s
+
+    def refresh(self):
+        pass
+
+    def clear(self):
+        self.content = [[self.background for c in range(self.width)] for r in range(self.height)]
+
+    def __str__(self):
+        return '\n'.join([''.join(l) for l in self.content])
+
 class CliGame(Game):
 
     def __init__(self, stdscr):
