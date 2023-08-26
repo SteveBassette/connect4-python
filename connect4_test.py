@@ -225,11 +225,11 @@ class TestConnect4CLI(Connect4CLITestCase):
 
     def test_can_pass_cligame_a_screen(self):
         test_screen = connect4.Screen()
-        game = connect4.TestedCliGame(test_screen)
+        game = connect4.CliGame(test_screen)
 
     def test_cligame_empty_board_pixelcomparison(self):
         test_screen = connect4.Screen(width=6, height=9, background='#')
-        game = connect4.TestedCliGame(test_screen)
+        game = connect4.CliGame(test_screen)
         game.paintGameBoard()
         self.assertScreenEquals(test_screen, """
                          v#####
@@ -244,7 +244,7 @@ class TestConnect4CLI(Connect4CLITestCase):
 
     def test_cligame_dropped_token_pixelcomparison(self):
         test_screen = connect4.Screen(width=6, height=9, background='#')
-        game = connect4.TestedCliGame(test_screen)
+        game = connect4.CliGame(test_screen)
         game.drop()
         game.paintGameBoard()
         self.assertScreenEquals(test_screen, """
@@ -260,7 +260,7 @@ class TestConnect4CLI(Connect4CLITestCase):
 
     def test_cligame_2_dropped_token_pixelcomparison(self):
         test_screen = connect4.Screen(width=6, height=9, background='#')
-        game = connect4.TestedCliGame(test_screen)
+        game = connect4.CliGame(test_screen)
         game.drop()
         game.drop()
         game.paintGameBoard()
@@ -277,7 +277,7 @@ class TestConnect4CLI(Connect4CLITestCase):
 
     def test_cligame_can_shift_right(self):
         test_screen = connect4.Screen(width=6, height=9, background='#')
-        game = connect4.TestedCliGame(test_screen)
+        game = connect4.CliGame(test_screen)
         game.shiftRight()
         game.paintGameBoard()
         self.assertScreenEquals(test_screen, """
@@ -293,7 +293,7 @@ class TestConnect4CLI(Connect4CLITestCase):
 
     def test_cligame_cant_shift_right_past_screen(self):
         test_screen = connect4.Screen(width=6, height=9, background='#')
-        game = connect4.TestedCliGame(test_screen)
+        game = connect4.CliGame(test_screen)
         game.shiftRight()
         game.shiftRight()
         game.shiftRight()
@@ -314,7 +314,7 @@ class TestConnect4CLI(Connect4CLITestCase):
 
     def test_cligame_can_shift_left(self):
         test_screen = connect4.Screen(width=6, height=9, background='#')
-        game = connect4.TestedCliGame(test_screen)
+        game = connect4.CliGame(test_screen)
         game.shiftRight()
         game.shiftLeft()
         game.paintGameBoard()
@@ -331,7 +331,7 @@ class TestConnect4CLI(Connect4CLITestCase):
 
     def test_cligame_cant_shift_left_past_screen(self):
         test_screen = connect4.Screen(width=6, height=9, background='#')
-        game = connect4.TestedCliGame(test_screen)
+        game = connect4.CliGame(test_screen)
         game.shiftLeft()
         game.paintGameBoard()
         self.assertScreenEquals(test_screen, """
@@ -347,7 +347,7 @@ class TestConnect4CLI(Connect4CLITestCase):
 
     def test_cligame_print_game_over_after_game_finishes(self):
         test_screen = connect4.Screen(width=20, height=14, background='#')
-        game = connect4.TestedCliGame(test_screen)
+        game = connect4.CliGame(test_screen)
         game.drop()
         game.drop()
         game.shiftRight()
@@ -382,7 +382,7 @@ class TestConnect4CLI(Connect4CLITestCase):
 
     def test_cligame_cannot_drop_after_game_over(self):
         test_screen = connect4.Screen(width=20, height=14, background='#')
-        game = connect4.TestedCliGame(test_screen)
+        game = connect4.CliGame(test_screen)
         game.drop()
         game.drop()
         game.shiftRight()
@@ -418,7 +418,7 @@ class TestConnect4CLI(Connect4CLITestCase):
 
     def test_cligame_cannot_overfill_board(self):
         test_screen = connect4.Screen(width=20, height=14, background='#')
-        game = connect4.TestedCliGame(test_screen)
+        game = connect4.CliGame(test_screen)
         game.drop()
         game.drop()
         game.drop()
@@ -447,7 +447,7 @@ class TestConnect4CLI(Connect4CLITestCase):
 
     def test_cligame_trying_to_overfill_doesnt_skip_turn(self):
         test_screen = connect4.Screen(width=20, height=14, background='#')
-        game = connect4.TestedCliGame(test_screen)
+        game = connect4.CliGame(test_screen)
         game.drop()
         game.drop()
         game.drop()
@@ -480,7 +480,7 @@ class TestConnect4CLIGameRunner(Connect4CLITestCase):
 
     def test_cligame_user_input_can_shift_right(self):
         test_screen = connect4.Screen(width=20, height=14, background='#')
-        game = connect4.TestedCliGame(test_screen)
+        game = connect4.CliGame(test_screen)
         game_runnner = connect4.GameRunner(game)
         game_runnner.run(">")
         game.paintGameBoard()
@@ -503,7 +503,7 @@ class TestConnect4CLIGameRunner(Connect4CLITestCase):
 
     def test_cligame_user_input_can_shift_right_with_arrow_key(self):
         test_screen = connect4.Screen(width=20, height=14, background='#')
-        game = connect4.TestedCliGame(test_screen)
+        game = connect4.CliGame(test_screen)
         game_runnner = connect4.GameRunner(game)
         game_runnner.run([curses.KEY_RIGHT])
         game.paintGameBoard()
@@ -526,7 +526,7 @@ class TestConnect4CLIGameRunner(Connect4CLITestCase):
 
     def test_cligame_user_input_can_shift_left(self):
         test_screen = connect4.Screen(width=20, height=14, background='#')
-        game = connect4.TestedCliGame(test_screen)
+        game = connect4.CliGame(test_screen)
         game_runnner = connect4.GameRunner(game)
         game_runnner.run("><")
         game.paintGameBoard()
@@ -549,7 +549,7 @@ class TestConnect4CLIGameRunner(Connect4CLITestCase):
 
     def test_cligame_user_input_can_shift_left_with_arrow_key(self):
         test_screen = connect4.Screen(width=20, height=14, background='#')
-        game = connect4.TestedCliGame(test_screen)
+        game = connect4.CliGame(test_screen)
         game_runnner = connect4.GameRunner(game)
         game_runnner.run([curses.KEY_LEFT])
         game.paintGameBoard()
@@ -572,7 +572,7 @@ class TestConnect4CLIGameRunner(Connect4CLITestCase):
 
     def test_cligame_user_input_can_drop_token(self):
         test_screen = connect4.Screen(width=20, height=14, background='#')
-        game = connect4.TestedCliGame(test_screen)
+        game = connect4.CliGame(test_screen)
         game_runnner = connect4.GameRunner(game)
         game_runnner.run("v")
         game.paintGameBoard()
@@ -595,7 +595,7 @@ class TestConnect4CLIGameRunner(Connect4CLITestCase):
 
     def test_cligame_user_input_can_drop_token_with_arrow_keys(self):
         test_screen = connect4.Screen(width=20, height=14, background='#')
-        game = connect4.TestedCliGame(test_screen)
+        game = connect4.CliGame(test_screen)
         game_runnner = connect4.GameRunner(game)
         game_runnner.run([curses.KEY_DOWN])
         game.paintGameBoard()
@@ -618,7 +618,7 @@ class TestConnect4CLIGameRunner(Connect4CLITestCase):
 
     def test_cligame_user_input_can_drop_token_with_arrow_keys(self):
         test_screen = connect4.Screen(width=20, height=14, background='#')
-        game = connect4.TestedCliGame(test_screen)
+        game = connect4.CliGame(test_screen)
         game_runnner = connect4.GameRunner(game)
         game_runnner.run('>>v>v>v<v<vr')
         game.paintGameBoard()
