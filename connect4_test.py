@@ -4,7 +4,21 @@ import connect4
 import re
 import curses
 
-class TestConnect4(unittest.TestCase):
+
+class Connect4CLITestCase(unittest.TestCase):
+
+    def assertScreenEquals(self, screen, expected):
+        
+        self.assertEqual(str(screen), re.sub("(^ *)|(\n^ *$)", "", expected[1:], flags=re.MULTILINE))
+        # self.assertEqual(str(screen), expected[1:].replace(" ", ""))
+
+    def assertNotRaises(self, method):
+        try:
+            method()
+        except:
+            self.fail("Expected there wouldn't be an error")
+
+class TestConnect4(Connect4CLITestCase):
 
     def test_can_create_game(self):
         game = connect4.Game(6, 6)
@@ -161,7 +175,7 @@ class TestConnect4(unittest.TestCase):
         self.assertFalse(game.columnFull(0))
 
 
-class TestScreenDummy(unittest.TestCase):
+class TestScreenDummy(Connect4CLITestCase):
 
     def test_can_create_a_screen(self):
         test_screen = connect4.Screen()
@@ -209,18 +223,8 @@ class TestScreenDummy(unittest.TestCase):
 
     def test_can_refresh(self):
         test_screen = connect4.Screen(5,2,background='#')
-        try:
-            test_screen.refresh
-        except:
-            self.fail("Couldn't refresh the page")
-
-class Connect4CLITestCase(unittest.TestCase):
-
-    def assertScreenEquals(self, screen, expected):
+        self.assertNotRaises(test_screen.refresh)
         
-        self.assertEqual(str(screen), re.sub("(^ *)|(\n^ *$)", "", expected[1:], flags=re.MULTILINE))
-        # self.assertEqual(str(screen), expected[1:].replace(" ", ""))
-
 class TestConnect4CLI(Connect4CLITestCase):
 
     def test_can_pass_cligame_a_screen(self):
@@ -638,6 +642,12 @@ class TestConnect4CLIGameRunner(Connect4CLITestCase):
                                 ####################
                                 ####################
                                 """)
+
+    def test_cligame_unmapped_key_doesnt_raise_error(self):
+        test_screen = connect4.Screen(width=20, height=14, background='#')
+        game = connect4.CliGame(test_screen)
+        game_runnner = connect4.GameRunner(game)
+        self.assertNotRaises(lambda: game_runnner.run('m'))
 
 
 

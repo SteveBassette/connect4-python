@@ -93,13 +93,13 @@ class GameRunner():
         self.game.paintGameBoard()
         while True:
             command = screen.getch()
-            if "quit" == self.methods[command]():
+            if "quit" == self.methods.get(command, lambda: None)():
                 return
             self.game.paintGameBoard()
 
     def run(self, command_sequence=None):
         for command in command_sequence:
-            self.methods[command if not isinstance(command, str) else ord(command)]()
+            self.methods.get(command if not isinstance(command, str) else ord(command), lambda: None)()
 
 
 
