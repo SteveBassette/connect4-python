@@ -63,6 +63,29 @@ class CliGame(Game):
         for k in self.grid:
             stdscr.addstr(self.height-k[0]+1, k[1], self.grid[k])
 
+        stdscr.refresh()
+
+    def paintGameOver(self, stdscr):
+        self.gameState = GAME_STATES.gameover
+        stdscr.addstr(10, 0, 'GAME OVER ....')
+        stdscr.addstr(11, 0, 'Press:')
+        stdscr.addstr(12, 0, '       r) restart')
+        stdscr.addstr(13, 0, '       q) quit')
+        # stdscr.addstr(10, 0, ' _________    _______    _      _    _____   ')
+        # stdscr.addstr(11, 0, '|  _______|  |  ___  |  | \    / |  |  ___|  ')
+        # stdscr.addstr(12, 0, '| |    ___   | |___| |  |  \  /  |  | |___   ')
+        # stdscr.addstr(13, 0, '| |   |_  |  |  ___  |  |   \/   |  |  ___|  ')
+        # stdscr.addstr(14, 0, '| |_____| |  | |   | |  | |\  /| |  | |___   ')
+        # stdscr.addstr(15, 0, '|_________|  |_|   |_|  |_| \/ |_|  |_____|  ')
+
+        # stdscr.addstr(17, 0, ' ________   __        __   _____    _____    ')
+        # stdscr.addstr(18, 0, '|  ____  |  \ \      / /  |  ___|  |  _  |   ')
+        # stdscr.addstr(19, 0, '| |    | |   \ \    / /   | |___   | |_| |   ')
+        # stdscr.addstr(20, 0, '| |    | |    \ \  / /    |  ___|  |    _|   ')
+        # stdscr.addstr(21, 0, '| |____| |     \ \/ /     | |___   | |\ \    ')
+        # stdscr.addstr(22, 0, '|________|      \__/      |_____|  |_| \_\   ')
+        stdscr.refresh()
+
     def main(self):
         stdscr = self.stdscr
 
@@ -99,25 +122,7 @@ class CliGame(Game):
                 self.paintGameBoard(stdscr, self.selected_column)
 
             if self.over():
-                self.gameState = GAME_STATES.gameover
-                stdscr.addstr(10, 0, 'GAME OVER ....')
-                stdscr.addstr(11, 0, 'Press:')
-                stdscr.addstr(12, 0, '       r) restart')
-                stdscr.addstr(13, 0, '       q) quit')
-                # stdscr.addstr(10, 0, ' _________    _______    _      _    _____   ')
-                # stdscr.addstr(11, 0, '|  _______|  |  ___  |  | \    / |  |  ___|  ')
-                # stdscr.addstr(12, 0, '| |    ___   | |___| |  |  \  /  |  | |___   ')
-                # stdscr.addstr(13, 0, '| |   |_  |  |  ___  |  |   \/   |  |  ___|  ')
-                # stdscr.addstr(14, 0, '| |_____| |  | |   | |  | |\  /| |  | |___   ')
-                # stdscr.addstr(15, 0, '|_________|  |_|   |_|  |_| \/ |_|  |_____|  ')
-
-                # stdscr.addstr(17, 0, ' ________   __        __   _____    _____    ')
-                # stdscr.addstr(18, 0, '|  ____  |  \ \      / /  |  ___|  |  _  |   ')
-                # stdscr.addstr(19, 0, '| |    | |   \ \    / /   | |___   | |_| |   ')
-                # stdscr.addstr(20, 0, '| |    | |    \ \  / /    |  ___|  |    _|   ')
-                # stdscr.addstr(21, 0, '| |____| |     \ \/ /     | |___   | |\ \    ')
-                # stdscr.addstr(22, 0, '|________|      \__/      |_____|  |_| \_\   ')
-                stdscr.refresh()
+                self.paintGameOver(stdscr)
 
             if c == ord('q'):
                 break
