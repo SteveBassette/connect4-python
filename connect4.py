@@ -32,65 +32,74 @@ class Game():
                 return True
         return False
 
+class GAME_STATES():
+    PLAYING = 'playing'
+    gaming = 'playing'
+    gameover = 'gameover'
+
 class CliGame(Game):
+
     def __init__(self, stdscr):
         super().__init__(6,6)
         curses.noecho()
         curses.cbreak()
         stdscr.keypad(True)
+
         self.stdscr = stdscr
+
+        self.gameState = GAME_STATES.PLAYING
+        self.selected_column = 0
+        self.turn = 0
 
     def drop(self, token, column):
         super().drop(token, column)
 
+    def paintGameBoard(self, stdscr, selected_column):
+        stdscr.clear()
+        stdscr.addstr(0, selected_column, 'v')
+        stdscr.addstr(1, 0, '_'*self.width)
+        stdscr.addstr(8, 0, '~'*self.width)
+
+        for k in self.grid:
+            stdscr.addstr(self.height-k[0]+1, k[1], self.grid[k])
+
     def main(self):
         stdscr = self.stdscr
-        state = "new"
 
-        # game = self
         red = self.token('r')
         black = self.token('b')
 
         players_list = [red, black]
 
-        selected_column = 0
-        turn = 0
+        self.paintGameBoard(self.stdscr, self.selected_column)
         while True:
-            if state == "new":
-                stdscr.addstr(2, 0, 'Press "g" for game' )
 
             c = stdscr.getch()
 
             if c == ord('g'):
-                state = "gaming"
+                self.gameState = GAME_STATES.gaming
 
-            if state == "gameover" and c == ord('r'):
-                state = "gaming"
+            if self.gameState == GAME_STATES.gameover and c == ord('r'):
+                self.gameState = GAME_STATES.gaming
                 self.grid = dict()
 
             if c == curses.KEY_RIGHT:
-                selected_column += 1
-                selected_column = min(selected_column, self.width-1)
+                self.selected_column += 1
+                self.selected_column = min(self.selected_column, self.width-1)
 
             if c == curses.KEY_LEFT:
-                selected_column -= 1
-                selected_column = max(selected_column, 0)
+                self.selected_column -= 1
+                self.selected_column = max(self.selected_column, 0)
 
-            if c == curses.KEY_DOWN and state == "gaming":
-                self.drop(players_list[turn%len(players_list)], selected_column)
-                turn += 1
+            if c == curses.KEY_DOWN and self.gameState == GAME_STATES.gaming:
+                self.drop(players_list[self.turn%len(players_list)], self.selected_column)
+                self.turn += 1
 
-            if state == "gaming":
-                stdscr.clear()
-                stdscr.addstr(0, selected_column, 'v')
-                stdscr.addstr(1, 0, '_'*self.width)
-                stdscr.addstr(8, 0, '~'*self.width)
-
-                for k in self.grid:
-                    stdscr.addstr(self.height-k[0]+1, k[1], self.grid[k])
+            if self.gameState == GAME_STATES.gaming:
+                self.paintGameBoard(stdscr, self.selected_column)
 
             if self.over():
-                state = "gameover"
+                self.gameState = GAME_STATES.gameover
                 stdscr.addstr(10, 0, 'GAME OVER ....')
                 stdscr.addstr(11, 0, 'Press:')
                 stdscr.addstr(12, 0, '       r) restart')
