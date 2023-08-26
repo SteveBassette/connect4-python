@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import unittest
 import connect4
+import re
 
 class TestConnect4(unittest.TestCase):
 
@@ -187,7 +188,9 @@ class TestScreenDummy(unittest.TestCase):
 class TestConnect4CLI(unittest.TestCase):
 
     def assertScreenEquals(self, screen, expected):
-        self.assertEqual(str(screen), expected[1:].replace(" ", ""))
+        
+        self.assertEqual(str(screen), re.sub("(^ *)|(\n^ *$)", "", expected[1:], flags=re.MULTILINE))
+        # self.assertEqual(str(screen), expected[1:].replace(" ", ""))
 
     def test_can_pass_cligame_a_screen(self):
         test_screen = connect4.Screen()
@@ -294,7 +297,6 @@ class TestConnect4CLI(unittest.TestCase):
                          ######
                          ######
                          ~~~~~~""")
-        
 
     def test_cligame_cant_shift_left_past_screen(self):
         test_screen = connect4.Screen(width=6, height=9, background='#')
@@ -311,6 +313,41 @@ class TestConnect4CLI(unittest.TestCase):
                          ######
                          ######
                          ~~~~~~""")
+
+    def test_cligame_print_game_over_after_game_finishes(self):
+        test_screen = connect4.Screen(width=20, height=14, background='#')
+        game = connect4.TestedCliGame(test_screen)
+        game.drop()
+        game.drop()
+        game.shiftRight()
+
+        game.drop()
+        game.drop()
+        game.shiftRight()
+
+        game.drop()
+        game.drop()
+        game.shiftRight()
+
+        game.drop()
+
+        game.paintGameBoard()
+        self.assertScreenEquals(test_screen, """
+                                ###v################
+                                ______##############
+                                ####################
+                                ####################
+                                ####################
+                                ####################
+                                bbb#################
+                                rrrr################
+                                ~~~~~~##############
+                                ####################
+                                GAME OVER ...#######
+                                Press:##############
+                                ####r) restart######
+                                ####q) quit#########
+                                """)
 
 if __name__ == "__main__":
     unittest.main()

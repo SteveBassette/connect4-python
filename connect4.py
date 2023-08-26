@@ -84,6 +84,30 @@ class TestedCliGame(Game):
         for k in self.grid:
             self.stdscr.addstr(self.height-k[0]+1, k[1], self.grid[k])
 
+        if self.over():
+            self.paintGameOver()
+
+
+
+    def paintGameOver(self):
+        self.stdscr.addstr(10, 0, 'GAME OVER ...')
+        self.stdscr.addstr(11, 0, 'Press:')
+        self.stdscr.addstr(12, 4, 'r) restart')
+        self.stdscr.addstr(13, 4, 'q) quit')
+        # self.stdscr.addstr(10, 0, ' _________    _______    _      _    _____   ')
+        # self.stdscr.addstr(11, 0, '|  _______|  |  ___  |  | \    / |  |  ___|  ')
+        # self.stdscr.addstr(12, 0, '| |    ___   | |___| |  |  \  /  |  | |___   ')
+        # self.stdscr.addstr(13, 0, '| |   |_  |  |  ___  |  |   \/   |  |  ___|  ')
+        # self.stdscr.addstr(14, 0, '| |_____| |  | |   | |  | |\  /| |  | |___   ')
+        # self.stdscr.addstr(15, 0, '|_________|  |_|   |_|  |_| \/ |_|  |_____|  ')
+
+        # self.stdscr.addstr(17, 0, ' ________   __        __   _____    _____    ')
+        # self.stdscr.addstr(18, 0, '|  ____  |  \ \      / /  |  ___|  |  _  |   ')
+        # self.stdscr.addstr(19, 0, '| |    | |   \ \    / /   | |___   | |_| |   ')
+        # self.stdscr.addstr(20, 0, '| |    | |    \ \  / /    |  ___|  |    _|   ')
+        # self.stdscr.addstr(21, 0, '| |____| |     \ \/ /     | |___   | |\ \    ')
+        # self.stdscr.addstr(22, 0, '|________|      \__/      |_____|  |_| \_\   ')
+
     def drop(self):
         super().drop(self.players_list[self.turn%len(self.players_list)], self.selected_column)
         self.turn += 1
