@@ -364,6 +364,42 @@ class TestConnect4CLI(unittest.TestCase):
                                 ####q) quit#########
                                 """)
 
+    def test_cligame_cannot_drop_after_game_over(self):
+        test_screen = connect4.Screen(width=20, height=14, background='#')
+        game = connect4.TestedCliGame(test_screen)
+        game.drop()
+        game.drop()
+        game.shiftRight()
+
+        game.drop()
+        game.drop()
+        game.shiftRight()
+
+        game.drop()
+        game.drop()
+        game.shiftRight()
+
+        game.drop()
+        game.drop()
+
+        game.paintGameBoard()
+        self.assertScreenEquals(test_screen, """
+                                ###v################
+                                ______##############
+                                ####################
+                                ####################
+                                ####################
+                                ####################
+                                bbb#################
+                                rrrr################
+                                ~~~~~~##############
+                                ####################
+                                GAME OVER ...#######
+                                Press:##############
+                                ####r) restart######
+                                ####q) quit#########
+                                """)
+
     def test_cligame_cannot_overfill_board(self):
         test_screen = connect4.Screen(width=20, height=14, background='#')
         game = connect4.TestedCliGame(test_screen)

@@ -12,7 +12,6 @@ class Game():
         return color
 
     def drop(self, token, column):
-
         row = max([k[0] if k[1] == column else -1 for k in self.grid] + [-1])
         if row < self.height - 1:
             self.grid[(row+1, column)] = token
@@ -116,7 +115,7 @@ class TestedCliGame(Game):
         # self.stdscr.addstr(22, 0, '|________|      \__/      |_____|  |_| \_\   ')
 
     def drop(self):
-        if not self.columnFull(self.selected_column):
+        if not self.columnFull(self.selected_column) and not self.over():
             super().drop(self.players_list[self.turn%len(self.players_list)], self.selected_column)
             self.turn += 1
 
