@@ -57,23 +57,9 @@ class CliGame(Game):
         turn = 0
         while True:
             if state == "new":
-                stdscr.addstr(0, 0, 'Press "t" for test' )
-                stdscr.addstr(1, 0, 'Press "d" for divide' )
                 stdscr.addstr(2, 0, 'Press "g" for game' )
 
             c = stdscr.getch()
-
-
-            if c == ord('t'):
-                stdscr.clear()
-                state = "testing"
-                stdscr.addstr("test")
-
-            if c == ord('d'):
-                state = "dividing"
-                stdscr.clear()
-                stdscr.addstr(1, 0, '10 divided by {} is {}'.format(1, 10/1))
-                stdscr.addstr(7, 0, '10 divided by {} is {}'.format(1, 10/1))
 
             if c == ord('g'):
                 state = "gaming"
