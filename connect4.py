@@ -41,9 +41,6 @@ class CliGame(Game):
 
     def __init__(self, stdscr):
         super().__init__(6,6)
-        curses.noecho()
-        curses.cbreak()
-        stdscr.keypad(True)
 
         self.stdscr = stdscr
 
@@ -51,8 +48,13 @@ class CliGame(Game):
         self.selected_column = 0
         self.turn = 0
 
-    def drop(self, token, column):
-        super().drop(token, column)
+        red = self.token('r')
+        black = self.token('b')
+        self.players_list = [red, black]
+
+    def drop(self):
+        super().drop(self.players_list[self.turn%len(self.players_list)], self.selected_column)
+        self.turn += 1
 
     def paintGameBoard(self, stdscr, selected_column):
         stdscr.clear()
@@ -87,17 +89,14 @@ class CliGame(Game):
         stdscr.refresh()
 
     def main(self):
-        stdscr = self.stdscr
-
-        red = self.token('r')
-        black = self.token('b')
-
-        players_list = [red, black]
+        curses.noecho()
+        curses.cbreak()
+        self.stdscr.keypad(True)
 
         self.paintGameBoard(self.stdscr, self.selected_column)
         while True:
 
-            c = stdscr.getch()
+            c = self.stdscr.getch()
 
             if c == ord('g'):
                 self.gameState = GAME_STATES.gaming
@@ -115,20 +114,19 @@ class CliGame(Game):
                 self.selected_column = max(self.selected_column, 0)
 
             if c == curses.KEY_DOWN and self.gameState == GAME_STATES.gaming:
-                self.drop(players_list[self.turn%len(players_list)], self.selected_column)
-                self.turn += 1
+                self.drop()
 
             if self.gameState == GAME_STATES.gaming:
-                self.paintGameBoard(stdscr, self.selected_column)
+                self.paintGameBoard(self.stdscr, self.selected_column)
 
             if self.over():
-                self.paintGameOver(stdscr)
+                self.paintGameOver(self.stdscr)
 
             if c == ord('q'):
                 break
             
         curses.nocbreak()
-        stdscr.keypad(False)
+        self.stdscr.keypad(False)
         curses.echo()
         curses.endwin()
 
