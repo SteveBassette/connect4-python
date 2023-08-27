@@ -1,11 +1,36 @@
 from flask import Flask, jsonify, request
 import uuid
 from pprint import pprint as print
+import json
 
 app = Flask(__name__)
 
 # player_list = {"1": ['red', 'black']}
 games = dict()
+
+class NetworkGame():
+    def __init__(self, id):
+        self.id = id
+
+class NetworkPlayer():
+    def __init__(self, color):
+        self.color = color
+
+class Connect4Client():
+
+    def __init__(self, client=None):
+        self.client = client
+
+    def createNewGame(self, user=None):
+        new_game_response = self.client.get("/game/new")
+        new_game_data = json.loads(new_game_response.data)
+        return NetworkGame(new_game_data['game_id'])
+
+    def joinGame(self, game, user):
+        join_response = self.client.get("/join/" + game.id)
+        join_data = json.loads(join_response.data)
+        return NetworkPlayer(join_data['player_key'])
+
 
 @app.route("/game/new", methods=['POST', 'GET'])
 def new_game():
