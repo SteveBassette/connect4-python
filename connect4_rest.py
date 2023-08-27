@@ -1,3 +1,4 @@
+import flask
 from flask import Flask, jsonify, request
 import uuid
 from pprint import pprint as print
@@ -8,7 +9,18 @@ app = Flask(__name__)
 # player_list = {"1": ['red', 'black']}
 games = dict()
 
+class GameFullException(Exception):
+    """This exception indicates the Game has reached its player capacity"""
+    pass
+
+class AlreadyAPlayerException(Exception):
+    """This exception indicates the Game has reached its player capacity"""
+    pass
+
 class NetworkGame():
+    """A NetworkGame is a game hosted by a server and played by multiple
+    players on different clients"""
+
     def __init__(self, id):
         self.id = id
 
@@ -26,10 +38,29 @@ class Connect4Client():
         new_game_data = json.loads(new_game_response.data)
         return NetworkGame(new_game_data['game_id'])
 
-    def joinGame(self, game, user):
-        join_response = self.client.get("/join/" + game.id)
-        join_data = json.loads(join_response.data)
-        return NetworkPlayer(join_data['player_key'])
+    def joinGame(self, game, user=None):
+        if user:
+            response = self.client.post("/join/" + game.id, data={"user_id":user})
+        else:
+            response = self.client.get("/join/" + game.id)
+
+        try:
+            join_data = json.loads(response.data)
+        except:
+            raise Exception()
+
+
+        if  response.status == '200 OK':
+            return NetworkPlayer(join_data['player_key'])
+
+        elif response.status == '409 CONFLICT' and join_data['code'] == 'g1':
+            raise GameFullException()
+
+        elif response.status == '409 CONFLICT' and join_data['code'] == 'g2':
+            raise AlreadyAPlayerException()
+
+        else:
+            raise Exception()
 
 
 @app.route("/game/new", methods=['POST', 'GET'])
@@ -47,12 +78,20 @@ def new_game():
 def game_status():
     return jsonify({"game_id":"1"})
 
-@app.route("/join/<game_id>")
+@app.route("/join/<game_id>", methods=['POST', 'GET'])
 def join_game(game_id):
-    token = 'red'
-    token = games[game_id]["player_list"][len(games[game_id]["player_assignments"])]
-    games[game_id]["player_assignments"].append("anonymous")
-    return jsonify({"player_key":token})
+    user_id = request.form.get("user_id", "anonymous")
+
+    if len(games[game_id]["player_assignments"]) >= len(games[game_id]["player_list"]):
+        return jsonify(error=409, code='g1', text="Game is full"), 409
+    
+    elif not user_id == 'anonymous' and user_id in games[game_id]["player_assignments"]:
+        return jsonify(error=409, code="g2", text="User is already playing the game"), 409
+    
+    else:
+        token = games[game_id]["player_list"][len(games[game_id]["player_assignments"])]
+        games[game_id]["player_assignments"].append(user_id)
+        return jsonify({"player_key":token})
 
 if __name__ == "__main__":
     client = app.test_client();

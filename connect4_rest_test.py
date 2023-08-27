@@ -40,12 +40,6 @@ class TestConnect4RestClient(Connect4CLITestCase):
         game_2 = client.createNewGame()
         self.assertNotEqual(game_1.id, game_2.id)
 
-    def test_can_join_a_game(self):
-        game_1_response = self.client.get("/game/new")
-        game_1_data = json.loads(game_1_response.data)
-        response = self.client.get("/join/"+game_1_data["game_id"])
-        self.fail()
-
     def test_can_get_player_key_upon_joining_game(self):
         client = connect4_rest.Connect4Client(self.client)
         game_1 = client.createNewGame()
@@ -58,6 +52,20 @@ class TestConnect4RestClient(Connect4CLITestCase):
         player_1 = client.joinGame(game_1, user=1)
         player_2 = client.joinGame(game_1, user=2)
         self.assertEqual("black", player_2.color)
+
+    def test_3rd_player_cant_join_game(self):
+        client = connect4_rest.Connect4Client(self.client)
+        game_1 = client.createNewGame()
+        player_1 = client.joinGame(game_1, user=1)
+        player_2 = client.joinGame(game_1, user=2)
+        self.assertRaises(connect4_rest.GameFullException, lambda: client.joinGame(game_1, user=3))
+
+    def test_player_cant_join_game_twice(self):
+        client = connect4_rest.Connect4Client(self.client)
+        game_1 = client.createNewGame()
+        player_1 = client.joinGame(game_1, user=1)
+        self.assertRaises(connect4_rest.AlreadyAPlayerException, lambda: client.joinGame(game_1, user=1))
+
 
 if __name__ == "__main__":
     unittest.main()
