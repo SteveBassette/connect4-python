@@ -2,7 +2,6 @@ import flask
 from flask import Flask, jsonify, request
 import uuid
 from pprint import pprint as print
-import json
 
 app = Flask(__name__)
 
@@ -35,28 +34,27 @@ class Connect4Client():
 
     def createNewGame(self, user=None):
         new_game_response = self.client.get("/game/new")
-        new_game_data = json.loads(new_game_response.data)
+        new_game_data = new_game_response.json()
         return NetworkGame(new_game_data['game_id'])
 
     def joinGame(self, game, user=None):
         if user:
-            response = self.client.post("/join/" + game.id, data={"user_id":user})
+            response = self.client.post("/join/" + game.id, json={"user_id":user})
         else:
             response = self.client.get("/join/" + game.id)
 
         try:
-            join_data = json.loads(response.data)
+            join_data = response.json()
         except:
             raise Exception()
-
-
-        if  response.status == '200 OK':
+            
+        if  response.status_code == 200:
             return NetworkPlayer(join_data['player_key'])
 
-        elif response.status == '409 CONFLICT' and join_data['code'] == 'g1':
+        elif response.status_code == 409 and join_data['code'] == 'g1':
             raise GameFullException()
 
-        elif response.status == '409 CONFLICT' and join_data['code'] == 'g2':
+        elif response.status_code == 409 and join_data['code'] == 'g2':
             raise AlreadyAPlayerException()
 
         else:
