@@ -101,9 +101,7 @@ class GameRunner():
         for command in command_sequence:
             self.methods.get(command if not isinstance(command, str) else ord(command), lambda: None)()
 
-
-
-class CliGame(Game):
+class TuiGame(Game):
 
     def __init__(self, stdscr):
         super().__init__(6,6)
@@ -167,7 +165,7 @@ def main_ui(stdscr):
     curses.cbreak()
     stdscr.keypad(True)
 
-    game = CliGame(stdscr)
+    game = TuiGame(stdscr)
     runner = GameRunner(game)
     runner.runSequential(stdscr)
     
